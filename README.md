@@ -437,6 +437,8 @@ Note: Make sure to move 'index.html' from 'src' to public.
 
 Check next v00.02 'webpack.config.js' file for complete file
 
+_Git tag:_  **version00.03** 
+
 ## Create multiple bundles
 In a real life application we use a lot of third party libraries to make our life easy, At this moment our webpack configuration adds all the vendor+developer scripts in single bundle but this could be undesirable if we are using more third party scripts for various reasons. 
 
@@ -462,13 +464,49 @@ The 'shared.js' file will keep bundle for common features or code of all the app
 <script src="/public/js/about.js"></script>
 ```
 
-```
 <!--Inside index.html-->
 
 As you can see we have to create two more files in 'src' folder these are 'about.js' and 'contact.js.
 
 The third file 'shared.js' will be created by a plugin of webpack
 
+Lets open webpack file if you have written code inside those file just one console statement inside the 'about.js' and 'contact.js' will work.
+
+Lets first get 'CommonsChunkPlugin' from webpack optimize object
+
+at top webpack.config.js file
+
+```
+var commonsPlugin = new webpack.optimize.commonsChunkPlugin('shared.js');
+```
+
+Lets change entry key again this time. For thiswe will use an object having three different entry point object like shown below
+
+```
+entry:{
+	about: './about.js',
+	home: './home.js',
+	contact: './contact.js'
+}
+```
+
+This will create entries with these three files 
+
+Now tell webpack in output to create a bundle for each entry, You can also use like this to create bundle with more than 1 file `home: ['./home.js', './utils.js']`
+
+Now In output property we will keep path and publicPath unchanged but we will update the update filename with a dynamic one. To pick name of the bundle with entry key we just have to specify code as given below
+
+```
+filename: "[name].js"
+```
+
+This will tell webpack to use entry keys for naming the packages
+
+Finally in plugins property add 'commonChunksPlugin' as we have executed it in started with the property 'shared.js' we will just use it not execute it
+
+```
+plugins: [commonsPlugin]
+```
 
 
   

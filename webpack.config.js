@@ -1,6 +1,7 @@
 //importing webpack
 var webpack = require('webpack');
 var path = require('path');
+var CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
 //exporting configuration to webpack to process. Webpack accepts commonJs module pattern
 
 module.exports = {
@@ -9,13 +10,13 @@ module.exports = {
 	//entry: 'app.js';
 	//
 	//App js contains 'login.js' and that will also be loaded by webpack
-	entry: ['./utils.js', './app.js'],
+	entry: {home: './home.js', about: './about.js', contact: './contact.js'},
 	
 	//define our output
 	output: {
     path: path.resolve('build/js/'),
     publicPath: '/public/js/',
-		filename:'bundle.js'
+		filename:'[name].js'
 	},
 	//for watching the files for changes
 	watch: true,
@@ -27,6 +28,9 @@ module.exports = {
   },
 
   plugins: [
+    new CommonsChunkPlugin({
+    name: 'shared'
+    }),
     // removed in dev file as we donot want minification in our dev build file. We will add this in production config file
   //  new webpack.optimize.UglifyJsPlugin()
   ],

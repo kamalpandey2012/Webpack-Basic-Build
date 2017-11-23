@@ -1,7 +1,0 @@
-alias gta='git add .'
-alias gtpus='git push origin master'
-alias gts='git status'
-alias gtl='git log'
-alias gtb='git branch'
-alias gtpul='git pull origin master'
-alias gtc='git commit -v'
