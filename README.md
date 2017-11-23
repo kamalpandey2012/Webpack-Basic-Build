@@ -354,3 +354,123 @@ scripts:{
 Thats a wrap for this release 
 
 _Git tag:_  **version00.01** 
+
+# Part 2 of Build process
+
+In this part we will 
+- Organize files and folders
+- Create Multiple Bundles
+- Add Css to our project
+- Add fonts to our project
+- Add images to our project
+
+
+So lets get started
+
+## Organize files and folders
+In this part we will organize our files to emulate the production environment, here we want to add a public folder that will server up the project in case of real web server in that folder there will be 'assets' and 'js' files along side with 'index.html' file. We will write our JS code in 'src' folder.
+
+To achieve this we need a folder in public directory then we will move our 'index.html' file from src to 'public' folder, this will be served from the web server. Now we want webpack to copy our js files to public folder but only in production build not in development build as it will create lots of files in index.html files that is just for the main views of the project and will create searching in IDE slower alongside confusion in selecting the files. To solve this problem we will actually copy files to 'build' folder that will also be in root of project.
+
+As it is very common proctice of not checking any build files to VCS (git) so we will add 'build' folder to be ignored by git, So in your '.gitignore' file add 'build' folder. For reference look at the .gitignore file in version release
+
+For resolution of project paths we will take help of path module that is build in nodejs. lets call it to project
+
+```javascript
+var path = require('path');
+```
+
+This will import the module path into the project, We will provide a context to our application.
+
+after module.exports
+
+```
+context: path.resolve('src'),
+```
+
+Now we will add where to save the output file This will be 'build/js' path
+
+```
+path: path.resolve('build/js'),
+```
+
+Now tell where to accept the request from the web server.
+
+```
+publicPath: '/public/js/',
+```
+The above code tells webpack that when request comes to '/public/js/' then serve it from '/build/js' folder. The final output property will something like this.
+
+```
+output: {
+path:path.resolve('bundle/js/'),
+publicPath: '/public/js/'
+filename:'bundle.js'
+}
+```
+
+Now tell development server to look for static files in public directory not in build directory
+
+```
+devServer:{
+	contentBase: 'public'
+}
+```
+
+Now change 'index.html' to accomodate the changes
+
+```
+<script src="/public/js/bundle.js'></script>
+```
+
+We have to change entry as we are now providing context to the webpack.
+
+```
+entry: ['./utils.js', './app.js'],
+```
+
+Webpack will add path according to context of the file
+
+Now run our dev server by running following command in terminal `npm start`. 
+
+Note: Make sure to move 'index.html' from 'src' to public.
+
+Check next v00.02 'webpack.config.js' file for complete file
+
+## Create multiple bundles
+In a real life application we use a lot of third party libraries to make our life easy, At this moment our webpack configuration adds all the vendor+developer scripts in single bundle but this could be undesirable if we are using more third party scripts for various reasons. 
+
+- Our browsers cache our scripts while loading the page. When the page reloads or user opens next time it will not request for unchanged files. Browser detects unchanged files with filename. As we are only changing our code not vendors so it's much easy to create a separate bundle for vendor scripts so that browser cache vendor script and don't have to request it again and again.
+- Another reason is to create bundles of developer scripts in various forms like We want our home page to load faster as user is visiting it first time. So we will create a bundle of 'vendor scripts', 'common scripts' ( will be common to whole of our application ), and 'home scripts'. This will help home page load fast as home script serves only home page and also 'common' libraries gets cached in the browser so when user navigates to another page then only that page script gets loaded.
+- Lazy loading. It is a phenomenon when we want some script to load slowly till all scripts have been loaded.
+
+We will create 2 html files 'about.html' and 'contact.html' to add their bundles separately
+
+Inside these files we will call scripts in this format
+
+```
+<!--Inside contact.html -->
+<script src="/public/js/shared.js"></script>
+<script src="/public/js/contact.js"></script>
+```
+
+The 'shared.js' file will keep bundle for common features or code of all the application js files. 
+
+```
+<!-- Inside about.html-->
+<script src="/public/js/shared.js"></script>
+<script src="/public/js/about.js"></script>
+```
+
+```
+<!--Inside index.html-->
+
+As you can see we have to create two more files in 'src' folder these are 'about.js' and 'contact.js.
+
+The third file 'shared.js' will be created by a plugin of webpack
+
+
+
+  
+
+
