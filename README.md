@@ -632,6 +632,7 @@ options: {
 }
 }
 ```
+
 We will compile sass to css then will convert that to a css file to be loaded separately to the application. For that we need one more loader 'extract-text-webpack-plugin', it will extract the text out of that stream and create a file out of it.
 
 Our pipeline for this task.
@@ -680,3 +681,33 @@ Now link given below in head of your view html file.
 Now run your application. 
 
 For further code inspection look at the release **v00.04**.   
+
+## Adding fonts and images
+Fonts and Images work the same way. We just have to use a loader named 'url-loader'. This loader helps in making url of the file types in the 'test' property of loader. We could also specify to use the images or files to be embedded in form of hex code or loaded in separate file. Lets start by installing url-loader loader `npm install --save url-loader`. Now use it in your 'webpack.config.js' file. 
+Lets first check for images with extension .png, .jpg. 
+
+```
+ {
+    test:/\.(png|jpg)$/, exclude: /node_modules/, loader: 'url-loader?limit=10000'
+ }
+```
+
+Now add some images in 'src/images/' folder. We will use one logo image that will be dynamically loaded to the header and one Banner image for hero section that will be loaded twice one as a css background element other by image tag. Lets see the code for doing this. Change 'index.html' file. 
+
+```
+let logoContainer = document.getElementById('logo');
+let imageTag = document.createElement('img');
+imageTag.src = require('./images/konfinity_logo_new.png');
+imageTag.style.height = '2.5em';
+imageTag.style.width = '2.8em';
+console.log('image tag ', imageTag);
+logoContainer.appendChild(imageTag);
+```
+
+Add a element of id 'logo' just before the navigation_list element
+
+```
+<div id="logo"></div>
+```
+
+
