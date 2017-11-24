@@ -31,18 +31,27 @@ module.exports = {
     new CommonsChunkPlugin({
     name: 'shared'
     }),
+
+        new webpack.ProvidePlugin({
+        $: 'jquery',
+        jQuery: 'jquery',
+        'window.jQuery': 'jquery',
+        Popper: ['popper.js', 'default'],
+        // In case you imported plugins individually, you must also require them here:
+      })
     // removed in dev file as we donot want minification in our dev build file. We will add this in production config file
   //  new webpack.optimize.UglifyJsPlugin()
   ],
 
 	module: {
 		rules: [
+      
       {test: /\.js$/, exclude: /node_modules/, loader: 'eslint-loader', enforce: 'pre',
-        options: {
-          // several examples ! 
-        } 
+        options: {/*several examples !*/ } 
       },
-			{test:/\.js$/, exclude: /node_modules/, loader: 'babel-loader'}
+			
+      {test:/\.js$/, exclude: /node_modules/, loader: 'babel-loader'},
+      {test: /\.css$/, loader: 'style-loader!css-loader'},
 		]
 	}
 }

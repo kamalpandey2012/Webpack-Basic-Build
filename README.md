@@ -390,6 +390,8 @@ context: path.resolve('src'),
 
 Now we will add where to save the output file This will be 'build/js' path
 
+
+
 ```
 path: path.resolve('build/js'),
 ```
@@ -399,6 +401,7 @@ Now tell where to accept the request from the web server.
 ```
 publicPath: '/public/js/',
 ```
+
 The above code tells webpack that when request comes to '/public/js/' then serve it from '/build/js' folder. The final output property will something like this.
 
 ```
@@ -508,7 +511,96 @@ Finally in plugins property add 'commonChunksPlugin' as we have executed it in s
 plugins: [commonsPlugin]
 ```
 
+## Adding css to the project
 
-  
+We will try to cover a lot of domain in this section like
 
+- CSS and Style Loaders
+- Loader Implementation
+- Using SASS
+- Using LESS
+- Separate CSS Bundle
+- Auto Prefixer
 
+Here we are discussing SASS and LESS, these are preprocessors of CSS just like 'Typescript' (Microsoft) or 'Dart' (Google) for JS, This is super set of Css syntex giving you the freedom to use variables and other programming features on CSS. It Becomes very easy to organize your CSS code after use of Preprocessors as they encapsulates the css according to features. A lot of code reuse could be achieved by using SASS and LESS. For now its out of context for this course to go into the details of Preprocessor technologies. For more info just make a google search you will get a lot of tutorials regarding the use and benefits of using Preprocessors.
+
+Lets move forward with using CSS and Style Loaders
+
+For css to be loaded into our project we will need 'style-loader' and 'css-loader'. Lets install these loaders `npm install --save-dev style-loader css-loader`
+
+Now create a folder inside the src folder with name 'styles' and inside it create a file 'default.css'. This will be loaded for entire application
+
+In that file implement common styles such as navigation, container etc.
+
+Lets write some css code inside it.  
+
+default.css
+
+```
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+#primary_navigation{
+  background-image:linear-gradient(rgba(0,0,0,1), rgba(0,0,0,0.8));
+  height:4.6em;
+  z-index:20;
+}
+
+#primary_navigation ul{
+font-size:1.2em;
+font-weight:600;
+padding:.9em 0 1em 1em;
+list-style-type:none;
+}
+
+#primary_navigation ul li{
+display:inline-block;
+padding:.5em 1em;
+}
+
+#primary_navigation ul li a{
+font-style:none;
+color:#fff;
+text-decoration:none;
+}
+
+#primary_navigation ul li a.active{
+color: orange;
+}
+
+#page_container{
+margin:.5em 2em;
+}
+```
+
+This will display a navigation bar at top of the page. Lets move forward and use this file in all of our three pages. You could repeat code as webpack will take care of repeatitions and will put them into the 'shared' file not on every js file
+
+Inside the 'webpack.config.js' file we have to tell how to use css using style-loader and css-loader
+
+```javascript
+{test: /\.css$/, exclude:/node_modules/, loader: 'style-loader!css-loader'}
+```
+
+Import css in our 'home.js', 'about.js', 'contact.js'.
+
+```
+import './styles/default.css';
+```
+This will display the page with a black nagation with orange active link.
+
+Check the source of the page, you will find css getting loaded on head of the html page automatically by webpack.
+will create vendor.js that will be loaded. This file will be used for every vendor imports in our application.
+
+## Using SASS 
+As earlier told you that sass makes life easy so use it. Lets start by renaming our css files to .scss files. ex 'default.css' should be renamed to 'default.scss'. Use your ide file explorer side bar for this task.
+
+Install 'sass-loader'. `npm install --save-dev sass-loader`. This will compile sass into css and that will be shipped to the browser. sass provides a lot of customization options as it gets compiled. 
+
+Now call this loader inside 'webpack.config.js' file.
+
+```
+
+``` 
