@@ -597,10 +597,86 @@ will create vendor.js that will be loaded. This file will be used for every vend
 ## Using SASS 
 As earlier told you that sass makes life easy so use it. Lets start by renaming our css files to .scss files. ex 'default.css' should be renamed to 'default.scss'. Use your ide file explorer side bar for this task.
 
-Install 'sass-loader'. `npm install --save-dev sass-loader`. This will compile sass into css and that will be shipped to the browser. sass provides a lot of customization options as it gets compiled. 
+Install 'sass-loader'. `npm install --save-dev node-sass sass-loader`. This will compile sass into css and that will be shipped to the browser. sass provides a lot of customization options as it gets compiled, node-sass is the engine that will be required by javascript to compile sass.
 
-Now call this loader inside 'webpack.config.js' file.
+### Usage patterns of sass
+
+Basic patterns 
+
+chain sass with style-loader and css-loader
 
 ```
+module.exports = {
+  ...
+module: {
+  rules:[
+    test: /\.scss$/,
+    use: [
+        {loader: 'style-loader' // creates style nodes from JS strings},
+        {loader: 'css-loader'// translates css into common js module pattern},
+        {loader: 'sass-loader'// compiles sass to css}
+
+    ]
+  }
+}
+```
+
+You can also pass some instruction to compiler that is 'node-sass' by specifying an option property like this
+
+```
+...
+{
+loader: 'sass-loader',
+options: {
+  includePaths: ['absolute/path/a', 'absolute/path/b']
+}
+}
+```
+We will compile sass to css then will convert that to a css file to be loaded separately to the application. For that we need one more loader 'extract-text-webpack-plugin', it will extract the text out of that stream and create a file out of it.
+
+Our pipeline for this task.
+
+sass-loader will convert the stream to css then it will be converted to a file with extention .css.  
+
+```
+  {test: /\.scss$/, 
+        loader: ExtractTextPlugin.extract({fallback: 'style-loader',use:['css-loader', 'sass-loader']})
+   }
+```
+
+Now inside plugin
+
+```
+    new ExtractTextPlugin({
+    filename: 'css/[name].bundle.css',
+    allChunks: true
+    }),
+```
+
+Here we are telling extract text plugin to create bundle according to the js bundles and we will load default and individual bundle on the html file of bundle. 
+
+Create entry for scss file that will be entry point of the bundle. 
+
+```
+	entry: {home: './home.js', about: './about.js', contact: './contact.js',default: './styles/default.scss'},
+	
+	//define our output
+	output: {
+    path: path.resolve('build/'),
+    publicPath: '/public/',
+		filename:'js/[name].js'
+	},
+	
+```
+
+Here we have made our application code more generic and more welcoming towards different types of files.
+
+Now link given below in head of your view html file.
 
 ``` 
+ <link href="public/css/default.bundle.css" type="text/css" rel="stylesheet">
+```
+
+Now run your application. 
+
+For further code inspection look at the release **v00.04**.   

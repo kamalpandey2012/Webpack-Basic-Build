@@ -1,6 +1,8 @@
 //importing webpack
 var webpack = require('webpack');
 var path = require('path');
+var ExtractTextPlugin= require('extract-text-webpack-plugin');
+
 var CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
 //exporting configuration to webpack to process. Webpack accepts commonJs module pattern
 
@@ -10,13 +12,13 @@ module.exports = {
 	//entry: 'app.js';
 	//
 	//App js contains 'login.js' and that will also be loaded by webpack
-	entry: {home: './home.js', about: './about.js', contact: './contact.js'},
+	entry: {home: './home.js', about: './about.js', contact: './contact.js',default: './styles/default.scss'},
 	
 	//define our output
 	output: {
-    path: path.resolve('build/js/'),
-    publicPath: '/public/js/',
-		filename:'[name].js'
+    path: path.resolve('build/'),
+    publicPath: '/public/',
+		filename:'js/[name].js'
 	},
 	//for watching the files for changes
 	watch: true,
@@ -32,13 +34,11 @@ module.exports = {
     name: 'shared'
     }),
 
-        new webpack.ProvidePlugin({
-        $: 'jquery',
-        jQuery: 'jquery',
-        'window.jQuery': 'jquery',
-        Popper: ['popper.js', 'default'],
-        // In case you imported plugins individually, you must also require them here:
-      })
+    new ExtractTextPlugin({
+    filename: 'css/[name].bundle.css',
+    allChunks: true
+    })
+
     // removed in dev file as we donot want minification in our dev build file. We will add this in production config file
   //  new webpack.optimize.UglifyJsPlugin()
   ],
@@ -52,6 +52,10 @@ module.exports = {
 			
       {test:/\.js$/, exclude: /node_modules/, loader: 'babel-loader'},
       {test: /\.css$/, loader: 'style-loader!css-loader'},
-		]
-	}
+      {test: /\.scss$/, 
+        loader: ExtractTextPlugin.extract({fallback: 'style-loader',use:['css-loader', 'sass-loader']})
+      }
+    ]
+      }
+      
 }
